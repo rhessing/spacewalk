@@ -98,6 +98,7 @@ public class DebRepositoryWriter extends RepositoryWriter {
             writer.addPackage(pkgDto);
         }
         writer.generatePackagesGz();
+        writer.publishPackages(prefix);
 
         log.info("Repository metadata generation for '" +
                  channel.getLabel() + "' finished in " +

@@ -51,7 +51,7 @@ public class DebPackageWriter {
         log.debug("DebPackageWriter created");
         try {
             channelLabel = channel.getLabel();
-            filenamePackages = prefix + "Packages";
+            filenamePackages = prefix + ".Packages";
             File f = new File(filenamePackages);
             if (f.exists()) {
                 f.delete();
@@ -323,6 +323,49 @@ public class DebPackageWriter {
         }
         catch (IOException e) {
             log.error("Failed to create Packages.gz " + e.toString());
+        }
+    }
+
+    /**
+     * Move .Packages and .Packages.gz to Packages and Packages.gz
+     *
+     * @param prefix path to repository
+     */
+    public void publishPackages(String prefix) {
+        File hiddenFilenamePackages = new File(filenamePackages);
+        File hiddenFilenamePackagesGz = new File(filenamePackages + ".gz");
+        File publishedFilenamePackages = new File(prefix + "Packages");
+        File publishedFilenamePackagesGz = new File(prefix + "Packages.gz");
+
+        // If files exist, delete current Packages files
+        if (publishedFilenamePackages.exists()) {
+            publishedFilenamePackages.delete();
+        }
+        if (publishedFilenamePackages.exists()) {
+            throw new RepomdRuntimeException("Unable to delete file: " +
+                    prefix + "Packages");
+        }
+
+        // If files exist, delete current Packages files
+        if (publishedFilenamePackagesGz.exists()) {
+            publishedFilenamePackagesGz.delete();
+        }
+        if (publishedFilenamePackagesGz.exists()) {
+            throw new RepomdRuntimeException("Unable to delete file: " +
+                    prefix + "Packages.gz");
+        }
+
+        // Rename newly generated hidden Packages files
+        boolean success = hiddenFilenamePackages.renameTo(publishedFilenamePackages);
+        if (!success) {
+            throw new RepomdRuntimeException("Unable to rename file: " +
+                    prefix + "Packages");
+        }
+
+        boolean successgz = hiddenFilenamePackagesGz.renameTo(publishedFilenamePackagesGz);
+        if (!successgz) {
+            throw new RepomdRuntimeException("Unable to rename file: " +
+                    prefix + "Packages.gz");
         }
     }
 
